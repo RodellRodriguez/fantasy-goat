@@ -55,12 +55,8 @@ def main():
 	test = Authentication()
 	test.automatic_refresh_access_token()
 	
-	headers = {"Content-type": "application/json"}
-	r = test.yahoo.get('https://fantasysports.yahooapis.com/fantasy/v2/game/nba', headers=headers)
-	from pprint import pprint
-	pprint(r.content)
-	pprint(r)
-
+	r = test.yahoo.get('https://fantasysports.yahooapis.com/fantasy/v2/game/nba')	
+	print(r.content)
 
 if __name__ == "__main__":
 	main()
