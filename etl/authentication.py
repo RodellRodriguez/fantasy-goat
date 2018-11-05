@@ -54,9 +54,33 @@ class Authentication:
 def main():
 	test = Authentication()
 	test.automatic_refresh_access_token()
+
+	game_key = 'nba'
+	league_id = '58180'
+	league_key = game_key +'.l.' + league_id
+
+	team_id = '8'
+	team_key = league_key + '.t.' + team_id
 	
-	r = test.yahoo.get('https://fantasysports.yahooapis.com/fantasy/v2/game/nba')	
-	print(r.content)
+	"""
+	r = test.yahoo.get('https://fantasysports.yahooapis.com/fantasy/v2/league/' 
+		+ league_key 
+		+ '/metadata'
+		+ '?format=json'
+		)
+	"""
+
+	
+	r = test.yahoo.get('https://fantasysports.yahooapis.com/fantasy/v2/team/' 
+		+ team_key 
+		+ '/stats'
+		+ ';type=week;week=3'
+		+ '?format=json'
+		)
+	
+	with open('data.json', 'w') as f:
+		json.dump(r.json(), f, )
+
 
 if __name__ == "__main__":
 	main()
