@@ -62,19 +62,12 @@ def main():
 	team_id = '8'
 	team_key = league_key + '.t.' + team_id
 	
-	"""
+	
 	r = test.yahoo.get('https://fantasysports.yahooapis.com/fantasy/v2/league/' 
 		+ league_key 
-		+ '/metadata'
-		+ '?format=json'
-		)
-	"""
-
-	
-	r = test.yahoo.get('https://fantasysports.yahooapis.com/fantasy/v2/team/' 
-		+ team_key 
+		+ '/teams'
 		+ '/stats'
-		+ ';type=week;week=3'
+		+ ';type=week;week=current'
 		+ '?format=json'
 		)
 	
