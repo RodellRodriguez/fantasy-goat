@@ -1,2 +1,3 @@
-/etl/secrets.json
-/env
+/backend/src/secrets.json
+/backend/env
+/frontend/fantasygoat/node_modules
