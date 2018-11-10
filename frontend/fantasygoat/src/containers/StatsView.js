@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-import Derp from '../components/Derp';
+import StatsTable from '../components/Table';
 
 class Stats extends React.Component {
 
@@ -21,7 +21,7 @@ class Stats extends React.Component {
 
 	render(){
 		return (
-			<Derp />
+			<StatsTable />
 		)
 	}
 
