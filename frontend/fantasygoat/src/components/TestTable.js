@@ -22,50 +22,11 @@ for (let i = 0; i < 46; i++) {
   });
 }
 
-
-const statsColumns = [{
-  title: 'Team Name',
-  dataIndex: 'name',
-}, {
-  title: 'FG%',
-  dataIndex: '5',
-}, {
-  title: 'FT%',
-  dataIndex: '8',
-}, {
-  title: '3PTM',
-  dataIndex: '10',
-}, {
-  title: 'PTS',
-  dataIndex: '12',
-}, {
-  title: 'REB',
-  dataIndex: '15',
-}, {
-  title: 'AST',
-  dataIndex: '16',
-}, {
-  title: 'ST',
-  dataIndex: '17',
-}, {
-  title: 'BLK',
-  dataIndex: '18',
-}, {
-  title: 'TO',
-  dataIndex: '19',
-}, {
-  title: 'Score',
-  dataIndex: 'score',
-}];
-
-class StatsTable extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      selectedRowKeys: [], // Check here to configure the default column
-      loading: false,
-    };
-  }
+class TestTable extends React.Component {
+  state = {
+    selectedRowKeys: [], // Check here to configure the default column
+    loading: false,
+  };
 
   start = () => {
     this.setState({ loading: true });
@@ -83,28 +44,15 @@ class StatsTable extends React.Component {
     this.setState({ selectedRowKeys });
   }
 
-  cleanStatsForTable = (stats) => {
-    console.log('hello world');
-  }
-
   render() {
-    // Don't render the table until we receive the stats data via Axios
-    if (this.props.stats.length === 0){
-      return null;
-    }
-    console.log('I got the stats props!', this.props.stats);
-
-    const stats = this.cleanStatsForTable(this.props.stats);
     const { loading, selectedRowKeys } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
     const hasSelected = selectedRowKeys.length > 0;
-    
     return (
       <div>
-        THIS IS THE STATS TABLE!
         <div style={{ marginBottom: 16 }}>
           <Button
             type="primary"
@@ -124,4 +72,4 @@ class StatsTable extends React.Component {
   }
 }
 
-export default StatsTable;
+export default TestTable;

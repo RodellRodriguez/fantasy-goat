@@ -2,11 +2,14 @@ import React from 'react';
 import axios from 'axios';
 
 import StatsTable from '../components/Table';
+import TestTable from '../components/TestTable';
 
 class Stats extends React.Component {
-
-	state = {
-		stats: []
+	constructor(props){
+		super(props);
+		this.state = {
+			stats: []
+		};
 	}
 
 	componentDidMount(){
@@ -15,16 +18,18 @@ class Stats extends React.Component {
 				this.setState({
 					stats: res.data
 				});
-				console.log(res.data);
 			})
 	}
 
 	render(){
 		return (
-			<StatsTable />
+			<div>
+				<StatsTable stats={this.state.stats}/>	
+				<br /> <br />
+				<TestTable />
+			</div>
 		)
 	}
-
 }
 
 export default Stats;
