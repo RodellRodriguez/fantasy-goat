@@ -1,28 +1,6 @@
 import React from 'react';
 import { Table, Button } from 'antd';
 
-const columns = [{
-  title: 'Name',
-  dataIndex: 'name',
-}, {
-  title: 'Age',
-  dataIndex: 'age',
-}, {
-  title: 'Address',
-  dataIndex: 'address',
-}];
-
-const data = [];
-for (let i = 0; i < 46; i++) {
-  data.push({
-    key: i,
-    name: `Edward King ${i}`,
-    age: 32,
-    address: `London, Park Lane no. ${i}`,
-  });
-}
-
-
 const statsColumns = [{
   title: 'Team Name',
   dataIndex: 'name',
@@ -84,7 +62,23 @@ class StatsTable extends React.Component {
   }
 
   cleanStatsForTable = (stats) => {
-    console.log('hello world');
+    const teams = stats["fantasy_content"]["league"][1]["teams"];
+    let test = Object.values(teams).slice(0,10).map((val, i, arr) => {  
+      let nameObj = val['team'][0][2];
+      let stats = val['team'][1]['team_stats']['stats'].reduce((stats, current) => {
+        if(current['stat']['stat_id'] !== "9004003" && current['stat']['stat_id'] !== "9007006") {
+          let statObj = {}; 
+          statObj[current['stat']['stat_id']] = current['stat']['value'];
+          stats.push(statObj);
+        }
+        return stats;
+      }, []);
+      let obj = Object.assign({},nameObj,...stats);
+      obj['key'] = nameObj['name'];
+      return obj;
+    }) 
+
+    return test;
   }
 
   render() {
@@ -92,9 +86,9 @@ class StatsTable extends React.Component {
     if (this.props.stats.length === 0){
       return null;
     }
-    console.log('I got the stats props!', this.props.stats);
 
     const stats = this.cleanStatsForTable(this.props.stats);
+    console.log('Here is the cleaned data ready for use!', stats);
     const { loading, selectedRowKeys } = this.state;
     const rowSelection = {
       selectedRowKeys,
@@ -118,7 +112,7 @@ class StatsTable extends React.Component {
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
           </span>
         </div>
-        <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
+        <Table rowSelection={rowSelection} columns={statsColumns} dataSource={stats} />
       </div>
     );
   }
