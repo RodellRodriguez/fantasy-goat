@@ -56,14 +56,55 @@ class StatsTable extends React.Component {
     }, 1000);
   }
 
-  onSelectChange = (selectedRowKeys) => {
+  onSelectChange = (selectedRowKeys, selectedRows) => {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
+    console.log('selectedRows are:', selectedRows);
+    console.log(this.calculateScore(selectedRowKeys, selectedRows));
   }
+
+  calculateScore = (selectedRowKeys, selectedRows) => {
+    if (selectedRows.length < 2) {
+      return 'Not enough teams selected'
+    }
+    let count = 0;
+    let firstTeam = {name : selectedRows[0].name, count: count}
+    let secondTeam = {name : selectedRows[1].name, count: count}
+    for(let key in selectedRows[0]){
+      if(key === 'name' || key === 'key') {continue;}
+      
+      let firstTeamStat = selectedRows[0][key];
+      let secondTeamStat = selectedRows[1][key];
+      
+      if (this.isTurnoverCategory(key)){
+        if (firstTeamStat < secondTeamStat) {
+          firstTeam.count++;
+        }
+        else if (secondTeamStat < firstTeamStat) {
+          secondTeam.count++;
+        }
+      }
+      else {
+        if (firstTeamStat > secondTeamStat) {
+          firstTeam.count++;
+        }
+        else if (secondTeamStat > firstTeamStat) {
+          secondTeam.count++;
+        }
+      } 
+    } 
+    return [firstTeam, secondTeam];
+  }
+
+  isTurnoverCategory = key => key === '19'
+
+  greaterThan = n => m => m > n
+
+  lessThan = n => m => m < n
 
   cleanStatsForTable = (stats) => {
     const teams = stats["fantasy_content"]["league"][1]["teams"];
-    let test = Object.values(teams).slice(0,10).map((val, i, arr) => {  
+    let tableData = Object.values(teams).slice(0,10).map((val, i, arr) => {  
       let nameObj = val['team'][0][2];
       let stats = val['team'][1]['team_stats']['stats'].reduce((stats, current) => {
         if(current['stat']['stat_id'] !== "9004003" && current['stat']['stat_id'] !== "9007006") {
@@ -73,13 +114,13 @@ class StatsTable extends React.Component {
         }
         return stats;
       }, []);
-      let obj = Object.assign({},nameObj,...stats);
-      obj['key'] = nameObj['name'];
-      return obj;
+      let statsObj = Object.assign({},nameObj,...stats);
+      statsObj['key'] = nameObj['name'];
+      return statsObj;
     }) 
 
-    return test;
-  }
+    return tableData;
+  };
 
   render() {
     // Don't render the table until we receive the stats data via Axios
@@ -88,7 +129,7 @@ class StatsTable extends React.Component {
     }
 
     const stats = this.cleanStatsForTable(this.props.stats);
-    console.log('Here is the cleaned data ready for use!', stats);
+    
     const { loading, selectedRowKeys } = this.state;
     const rowSelection = {
       selectedRowKeys,
