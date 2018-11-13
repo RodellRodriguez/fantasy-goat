@@ -80,7 +80,7 @@ class StatsTable extends React.Component {
         if (firstTeamStat < secondTeamStat) {
           firstTeam.count++;
         }
-        else if (secondTeamStat < firstTeamStat) {
+        if (secondTeamStat < firstTeamStat) {
           secondTeam.count++;
         }
       }
@@ -88,7 +88,7 @@ class StatsTable extends React.Component {
         if (firstTeamStat > secondTeamStat) {
           firstTeam.count++;
         }
-        else if (secondTeamStat > firstTeamStat) {
+        if (secondTeamStat > firstTeamStat) {
           secondTeam.count++;
         }
       } 
@@ -102,33 +102,11 @@ class StatsTable extends React.Component {
 
   lessThan = n => m => m < n
 
-  cleanStatsForTable = (stats) => {
-    const teams = stats["fantasy_content"]["league"][1]["teams"];
-    let tableData = Object.values(teams).slice(0,10).map((val, i, arr) => {  
-      let nameObj = val['team'][0][2];
-      let stats = val['team'][1]['team_stats']['stats'].reduce((stats, current) => {
-        if(current['stat']['stat_id'] !== "9004003" && current['stat']['stat_id'] !== "9007006") {
-          let statObj = {}; 
-          statObj[current['stat']['stat_id']] = current['stat']['value'];
-          stats.push(statObj);
-        }
-        return stats;
-      }, []);
-      let statsObj = Object.assign({},nameObj,...stats);
-      statsObj['key'] = nameObj['name'];
-      return statsObj;
-    }) 
-
-    return tableData;
-  };
-
   render() {
-    // Don't render the table until we receive the stats data via Axios
+    // Don't render this component until we receive the stats props via Axios
     if (this.props.stats.length === 0){
       return null;
     }
-
-    const stats = this.cleanStatsForTable(this.props.stats);
     
     const { loading, selectedRowKeys } = this.state;
     const rowSelection = {
@@ -153,7 +131,7 @@ class StatsTable extends React.Component {
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
           </span>
         </div>
-        <Table rowSelection={rowSelection} columns={statsColumns} dataSource={stats} />
+        <Table rowSelection={rowSelection} columns={statsColumns} dataSource={this.props.stats} />
       </div>
     );
   }
