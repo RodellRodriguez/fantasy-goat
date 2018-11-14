@@ -56,11 +56,6 @@ class StatsTable extends React.Component {
     }, 1000);
   }
 
-
-  handleSelectChange = (selectedRowKeys, selectedRows) => {
-    this.props.onSelectRowChange(selectedRowKeys, selectedRows);
-  }
-
   greaterThan = n => m => m > n
 
   lessThan = n => m => m < n

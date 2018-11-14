@@ -8,7 +8,8 @@ class Stats extends React.Component {
 		super(props);
 		this.state = {
 			stats: [],
-			selectedRowKeys: []
+			selectedRowKeys: [],
+			selectedRows: []
 		};
 	}
 
@@ -63,9 +64,26 @@ class Stats extends React.Component {
 	  }	 
 
 	handleSelectChange = (selectedRowKeys, selectedRows) => {
-	  this.setState({ selectedRowKeys });
-	  console.log('selectedRows are:', selectedRows);
-	  this.calculateScore(selectedRows);
+		console.log('prev selectedRows', this.state.selectedRows)
+		if (this.state.selectedRows.length === 2 && selectedRows.length < 2) {
+			this.clearScores();
+		}
+
+		this.setState({ selectedRowKeys, selectedRows });
+		console.log('selectedRows are:', selectedRows);
+		this.calculateScore(selectedRows);
+	}
+
+	clearScores = () => {
+		let currentStats = this.copyStats(this.state.stats);
+		this.state.selectedRows.forEach(team => {
+			console.log('this the team yo', team)
+			currentStats[team['index']]['score'] = '';
+		})
+
+		this.setState({
+			stats: currentStats
+		})
 	}
 
 	calculateScore = (selectedRows) => {
@@ -104,22 +122,18 @@ class Stats extends React.Component {
 	isTurnoverCategory = key => key === '19'
 
 	setTeamScores = (selectedRows, matchup) => {
-		console.log(matchup[0], matchup[1]);
-		console.log(selectedRows);
-		
-		let currentStats = JSON.parse(JSON.stringify(this.state.stats));
-
+		let currentStats = this.copyStats(this.state.stats);
 		for (let teamIndex = 0; teamIndex < 2; teamIndex++){
 			let desiredTeamToChangeScore = currentStats[selectedRows[teamIndex]['index']];
 			desiredTeamToChangeScore['score'] = matchup[teamIndex]['score']
 		}
-		console.log('current state', this.state.stats)
-		console.log('next state', currentStats)
 		this.setState({
 			stats: currentStats
 		})
 	}
 	
+	copyStats = stats => JSON.parse(JSON.stringify(stats));
+
 	render(){
 		const rowSelection = {
 	    	selectedRowKeys: this.state.selectedRowKeys,
@@ -132,7 +146,6 @@ class Stats extends React.Component {
 					onSelectRowChange= {this.handleSelectChange}
 					rowSelection={rowSelection}
 				/>	
-				<br /> <br />
 			</div>
 		)
 	}
