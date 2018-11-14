@@ -8,16 +8,22 @@ class Stats extends React.Component {
 		super(props);
 		this.state = {
 			stats: [],
+			selectedWeek: null,
 			selectedRowKeys: [],
 			selectedRows: []
 		};
 	}
 
 	componentDidMount(){
-		axios.get('http://127.0.0.1:8000/weeklystats/')
+		const backendDomain = 'http://127.0.0.1:8000';
+		axios.get(backendDomain + '/weeklystats/')
 			.then(res => {
+				const currentWeek = res.data["fantasy_content"]["league"][0]['current_week'];
+				let stats = [...Array(currentWeek)];
+				stats[currentWeek-1] = this.cleanStatsForTable(res.data);
 				this.setState({
-					stats: this.cleanStatsForTable(res.data)
+					stats: stats,
+					selectedWeek: currentWeek
 				});
 			})
 	}
@@ -64,7 +70,6 @@ class Stats extends React.Component {
 	  }	 
 
 	handleSelectChange = (selectedRowKeys, selectedRows) => {
-		console.log('prev selectedRows', this.state.selectedRows)
 		if (this.state.selectedRows.length === 2 && selectedRows.length < 2) {
 			this.clearScores();
 		}
@@ -75,9 +80,8 @@ class Stats extends React.Component {
 	}
 
 	clearScores = () => {
-		let currentStats = this.copyStats(this.state.stats);
+		let currentStats = this.copyStats(this.state.stats[this.state.selectedWeek]);
 		this.state.selectedRows.forEach(team => {
-			console.log('this the team yo', team)
 			currentStats[team['index']]['score'] = '';
 		})
 
@@ -94,7 +98,7 @@ class Stats extends React.Component {
 	    let firstTeam = {name : selectedRows[0].name, score: score}
 	    let secondTeam = {name : selectedRows[1].name, score: score}
 	    for(let key in selectedRows[0]){
-	      if(key === 'name' || key === 'key' || key === 'index' || key === 'score') {continue;}
+	      if(this.isNotStatCategory(key)) {continue;}
 	      
 	      let firstTeamStat = selectedRows[0][key];
 	      let secondTeamStat = selectedRows[1][key];
@@ -118,11 +122,15 @@ class Stats extends React.Component {
 	    } 
 	    this.setTeamScores(selectedRows, [firstTeam, secondTeam])
 	  }
+
+	isNotStatCategory = key => {
+		return key === 'name' || key === 'key' || key === 'index' || key === 'score';
+	}
 	
 	isTurnoverCategory = key => key === '19'
 
 	setTeamScores = (selectedRows, matchup) => {
-		let currentStats = this.copyStats(this.state.stats);
+		let currentStats = this.copyStats(this.state.stats[this.state.selectedWeek]);
 		for (let teamIndex = 0; teamIndex < 2; teamIndex++){
 			let desiredTeamToChangeScore = currentStats[selectedRows[teamIndex]['index']];
 			desiredTeamToChangeScore['score'] = matchup[teamIndex]['score']
@@ -139,10 +147,11 @@ class Stats extends React.Component {
 	    	selectedRowKeys: this.state.selectedRowKeys,
 	    	onChange: this.handleSelectChange,
 	    };
+	    console.log(this.state.stats)
 		return (
 			<div>
 				<StatsTable 
-					stats={this.state.stats} 
+					stats={this.state.stats[this.state.selectedWeek]} 
 					onSelectRowChange= {this.handleSelectChange}
 					rowSelection={rowSelection}
 				/>	

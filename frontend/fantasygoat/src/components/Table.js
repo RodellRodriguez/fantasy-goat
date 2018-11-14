@@ -62,6 +62,7 @@ class StatsTable extends React.Component {
 
   render() {
     // Don't render this component until we receive the stats props via Axios
+    console.log(this.props)
     if (this.props.stats.length === 0){
       return null;
     }
