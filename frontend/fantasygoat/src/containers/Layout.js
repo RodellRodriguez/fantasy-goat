@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Menu, Breadcrumb } from 'antd';
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content} = Layout;
 
 const CustomLayout = (props) => {
   return (
@@ -29,9 +29,6 @@ const CustomLayout = (props) => {
             {props.children}
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
-          Ant Design ©2018 Created by Ant UED
-        </Footer>
       </Layout>
     );
 }

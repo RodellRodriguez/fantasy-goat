@@ -56,47 +56,10 @@ class StatsTable extends React.Component {
     }, 1000);
   }
 
-  onSelectChange = (selectedRowKeys, selectedRows) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
-    console.log('selectedRows are:', selectedRows);
-    console.log(this.calculateScore(selectedRowKeys, selectedRows));
-  }
 
-  calculateScore = (selectedRowKeys, selectedRows) => {
-    if (selectedRows.length < 2) {
-      return 'Not enough teams selected'
-    }
-    let count = 0;
-    let firstTeam = {name : selectedRows[0].name, count: count}
-    let secondTeam = {name : selectedRows[1].name, count: count}
-    for(let key in selectedRows[0]){
-      if(key === 'name' || key === 'key') {continue;}
-      
-      let firstTeamStat = selectedRows[0][key];
-      let secondTeamStat = selectedRows[1][key];
-      
-      if (this.isTurnoverCategory(key)){
-        if (firstTeamStat < secondTeamStat) {
-          firstTeam.count++;
-        }
-        if (secondTeamStat < firstTeamStat) {
-          secondTeam.count++;
-        }
-      }
-      else {
-        if (firstTeamStat > secondTeamStat) {
-          firstTeam.count++;
-        }
-        if (secondTeamStat > firstTeamStat) {
-          secondTeam.count++;
-        }
-      } 
-    } 
-    return [firstTeam, secondTeam];
+  handleSelectChange = (selectedRowKeys, selectedRows) => {
+    this.props.onSelectRowChange(selectedRowKeys, selectedRows);
   }
-
-  isTurnoverCategory = key => key === '19'
 
   greaterThan = n => m => m > n
 
@@ -109,10 +72,6 @@ class StatsTable extends React.Component {
     }
     
     const { loading, selectedRowKeys } = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
     const hasSelected = selectedRowKeys.length > 0;
     
     return (
@@ -131,7 +90,7 @@ class StatsTable extends React.Component {
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
           </span>
         </div>
-        <Table rowSelection={rowSelection} columns={statsColumns} dataSource={this.props.stats} />
+        <Table rowSelection={this.props.rowSelection} columns={statsColumns} dataSource={this.props.stats} />
       </div>
     );
   }

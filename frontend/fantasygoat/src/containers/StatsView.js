@@ -2,13 +2,13 @@ import React from 'react';
 import axios from 'axios';
 
 import StatsTable from '../components/Table';
-import TestTable from '../components/TestTable';
 
 class Stats extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			stats: []
+			stats: [],
+			selectedRowKeys: []
 		};
 	}
 
@@ -42,9 +42,10 @@ class Stats extends React.Component {
 
 	      let statsObj = Object.assign({},nameObj,...stats);
 	      statsObj['key'] = nameObj['name'];
+	      statsObj['index'] = i;
+	      statsObj['score'] = ''
 	      return statsObj;
 	    }) 
-
 	    return tableData;
 	  }
 
@@ -61,10 +62,76 @@ class Stats extends React.Component {
 	    return convertedStat;
 	  }	 
 
+	handleSelectChange = (selectedRowKeys, selectedRows) => {
+	  this.setState({ selectedRowKeys });
+	  console.log('selectedRows are:', selectedRows);
+	  this.calculateScore(selectedRows);
+	}
+
+	calculateScore = (selectedRows) => {
+	    if (selectedRows.length < 2) {
+	      return;
+	    }
+	    let score = 0;
+	    let firstTeam = {name : selectedRows[0].name, score: score}
+	    let secondTeam = {name : selectedRows[1].name, score: score}
+	    for(let key in selectedRows[0]){
+	      if(key === 'name' || key === 'key' || key === 'index' || key === 'score') {continue;}
+	      
+	      let firstTeamStat = selectedRows[0][key];
+	      let secondTeamStat = selectedRows[1][key];
+	      
+	      if (this.isTurnoverCategory(key)){
+	        if (firstTeamStat < secondTeamStat) {
+	          firstTeam.score++;
+	        }
+	        if (secondTeamStat < firstTeamStat) {
+	          secondTeam.score++;
+	        }
+	      }
+	      else {
+	        if (firstTeamStat > secondTeamStat) {
+	          firstTeam.score++;
+	        }
+	        if (secondTeamStat > firstTeamStat) {
+	          secondTeam.score++;
+	        }
+	      } 
+	    } 
+	    this.setTeamScores(selectedRows, [firstTeam, secondTeam])
+	  }
+	
+	isTurnoverCategory = key => key === '19'
+
+	setTeamScores = (selectedRows, matchup) => {
+		console.log(matchup[0], matchup[1]);
+		console.log(selectedRows);
+		
+		let currentStats = JSON.parse(JSON.stringify(this.state.stats));
+
+		for (let teamIndex = 0; teamIndex < 2; teamIndex++){
+			let desiredTeamToChangeScore = currentStats[selectedRows[teamIndex]['index']];
+			desiredTeamToChangeScore['score'] = matchup[teamIndex]['score']
+		}
+		console.log('current state', this.state.stats)
+		console.log('next state', currentStats)
+		this.setState({
+			stats: currentStats
+		})
+	}
+	
 	render(){
+		const rowSelection = {
+	    	selectedRowKeys: this.state.selectedRowKeys,
+	    	onChange: this.handleSelectChange,
+	    };
 		return (
 			<div>
-				<StatsTable stats={this.state.stats}/>	
+				<StatsTable 
+					stats={this.state.stats} 
+					onSelectRowChange= {this.handleSelectChange}
+					rowSelection={rowSelection}
+				/>	
 				<br /> <br />
 			</div>
 		)
