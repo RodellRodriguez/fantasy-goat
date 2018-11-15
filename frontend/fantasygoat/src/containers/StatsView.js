@@ -2,13 +2,15 @@ import React from 'react';
 import axios from 'axios';
 
 import StatsTable from '../components/Table';
+import WeekSelector from '../components/WeekSelector';
 
 class Stats extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
 			stats: [],
-			selectedWeek: null,
+			selectedWeek: 0,
+			selectedWeekIndex: 0,
 			selectedRowKeys: [],
 			selectedRows: []
 		};
@@ -23,7 +25,8 @@ class Stats extends React.Component {
 				stats[currentWeek-1] = this.cleanStatsForTable(res.data);
 				this.setState({
 					stats: stats,
-					selectedWeek: currentWeek
+					selectedWeek: currentWeek,
+					selectedWeekIndex: currentWeek-1
 				});
 			})
 	}
@@ -70,24 +73,13 @@ class Stats extends React.Component {
 	  }	 
 
 	handleSelectChange = (selectedRowKeys, selectedRows) => {
-		if (this.state.selectedRows.length === 2 && selectedRows.length < 2) {
-			this.clearScores();
+		if (this.state.selectedRows.length === 2 && selectedRows.length !== 2) {
+			this.clearTeamScores();
 		}
 
 		this.setState({ selectedRowKeys, selectedRows });
 		console.log('selectedRows are:', selectedRows);
 		this.calculateScore(selectedRows);
-	}
-
-	clearScores = () => {
-		let currentStats = this.copyStats(this.state.stats[this.state.selectedWeek]);
-		this.state.selectedRows.forEach(team => {
-			currentStats[team['index']]['score'] = '';
-		})
-
-		this.setState({
-			stats: currentStats
-		})
 	}
 
 	calculateScore = (selectedRows) => {
@@ -130,28 +122,48 @@ class Stats extends React.Component {
 	isTurnoverCategory = key => key === '19'
 
 	setTeamScores = (selectedRows, matchup) => {
-		let currentStats = this.copyStats(this.state.stats[this.state.selectedWeek]);
+		let currentStats = this.copyStats();
+		let desiredWeekStats = currentStats[this.state.selectedWeekIndex];
 		for (let teamIndex = 0; teamIndex < 2; teamIndex++){
-			let desiredTeamToChangeScore = currentStats[selectedRows[teamIndex]['index']];
+			let desiredTeamToChangeScore = desiredWeekStats[selectedRows[teamIndex]['index']];
 			desiredTeamToChangeScore['score'] = matchup[teamIndex]['score']
 		}
 		this.setState({
 			stats: currentStats
 		})
 	}
+
+	clearTeamScores = () => {
+		let currentStats = this.copyStats();
+		let desiredWeekStats = currentStats[this.state.selectedWeekIndex];
+		this.state.selectedRows.forEach(team => {
+			desiredWeekStats[team['index']]['score'] = '';
+		})
+
+		this.setState({
+			stats: currentStats
+		})
+	}	
 	
-	copyStats = stats => JSON.parse(JSON.stringify(stats));
+	copyStats = () => {
+		return JSON.parse(JSON.stringify(this.state.stats));
+	}
 
 	render(){
+		// Don't render any of the children components until we receive the stats props via Axios
+	    if (this.state.selectedWeek === 0){
+	      return null;
+	    }
 		const rowSelection = {
 	    	selectedRowKeys: this.state.selectedRowKeys,
 	    	onChange: this.handleSelectChange,
 	    };
-	    console.log(this.state.stats)
+	   
 		return (
 			<div>
+				<WeekSelector />
 				<StatsTable 
-					stats={this.state.stats[this.state.selectedWeek]} 
+					stats={this.state.stats[this.state.selectedWeekIndex]} 
 					onSelectRowChange= {this.handleSelectChange}
 					rowSelection={rowSelection}
 				/>	

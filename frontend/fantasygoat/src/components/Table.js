@@ -61,18 +61,11 @@ class StatsTable extends React.Component {
   lessThan = n => m => m < n
 
   render() {
-    // Don't render this component until we receive the stats props via Axios
-    console.log(this.props)
-    if (this.props.stats.length === 0){
-      return null;
-    }
-    
     const { loading, selectedRowKeys } = this.state;
     const hasSelected = selectedRowKeys.length > 0;
     
     return (
       <div>
-        THIS IS THE STATS TABLE!
         <div style={{ marginBottom: 16 }}>
           <Button
             type="primary"
