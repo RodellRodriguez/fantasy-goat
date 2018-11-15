@@ -10,6 +10,7 @@ class Stats extends React.Component {
 		this.state = {
 			stats: [],
 			selectedWeek: 0,
+			currentWeek: 0,
 			selectedWeekIndex: 0,
 			selectedRowKeys: [],
 			selectedRows: []
@@ -26,6 +27,7 @@ class Stats extends React.Component {
 				this.setState({
 					stats: stats,
 					selectedWeek: currentWeek,
+					currentWeek: currentWeek,
 					selectedWeekIndex: currentWeek-1
 				});
 			})
@@ -149,6 +151,10 @@ class Stats extends React.Component {
 		return JSON.parse(JSON.stringify(this.state.stats));
 	}
 
+	handleWeekChange = (week) => {
+		console.log(`This is week ${week}`);
+	}
+
 	render(){
 		// Don't render any of the children components until we receive the stats props via Axios
 	    if (this.state.selectedWeek === 0){
@@ -161,10 +167,13 @@ class Stats extends React.Component {
 	   
 		return (
 			<div>
-				<WeekSelector />
+				<WeekSelector 
+					currentWeek= {this.state.currentWeek}
+					selectedWeek= {this.state.selectedWeek}
+					handleWeekChange={this.handleWeekChange}
+				/>
 				<StatsTable 
 					stats={this.state.stats[this.state.selectedWeekIndex]} 
-					onSelectRowChange= {this.handleSelectChange}
 					rowSelection={rowSelection}
 				/>	
 			</div>
