@@ -5,8 +5,10 @@ import StatsTable from '../components/Table';
 import WeekSelector from '../components/WeekSelector';
 
 class Stats extends React.Component {
+
 	constructor(props){
 		super(props);
+		this.backendDomain = 'http://127.0.0.1:8000';
 		this.state = {
 			stats: [],
 			selectedWeek: 0,
@@ -18,19 +20,22 @@ class Stats extends React.Component {
 	}
 
 	componentDidMount(){
-		const backendDomain = 'http://127.0.0.1:8000';
-		axios.get(backendDomain + '/weeklystats/')
+		axios.get(this.backendDomain + '/weeklystats/current')
 			.then(res => {
-				const currentWeek = res.data["fantasy_content"]["league"][0]['current_week'];
-				let stats = [...Array(currentWeek)];
-				stats[currentWeek-1] = this.cleanStatsForTable(res.data);
-				this.setState({
-					stats: stats,
-					selectedWeek: currentWeek,
-					currentWeek: currentWeek,
-					selectedWeekIndex: currentWeek-1
-				});
+				this.setAllStatsDataState(res);
 			})
+	}
+
+	setAllStatsDataState = statsPayload => {
+		const currentWeek = statsPayload.data["fantasy_content"]["league"][0]['current_week'];
+		let stats = [...Array(currentWeek)];
+		stats[currentWeek-1] = this.cleanStatsForTable(statsPayload.data);
+		this.setState({
+			stats: stats,
+			selectedWeek: currentWeek,
+			currentWeek: currentWeek,
+			selectedWeekIndex: currentWeek-1
+		});			
 	}
 
 	cleanStatsForTable = (stats) => {
@@ -78,7 +83,6 @@ class Stats extends React.Component {
 		if (this.state.selectedRows.length === 2 && selectedRows.length !== 2) {
 			this.clearTeamScores();
 		}
-
 		this.setState({ selectedRowKeys, selectedRows });
 		console.log('selectedRows are:', selectedRows);
 		this.calculateScore(selectedRows);
@@ -152,10 +156,12 @@ class Stats extends React.Component {
 	}
 
 	handleWeekChange = (week) => {
-		console.log(`This is week ${week}`);
-		this.setState({
-			selectedWeek: week
-		})
+		if (typeof this.state.stats[week-1] === 'undefined') {
+			axios.get(this.backendDomain + `/weeklystats/${week}`)
+				.then(res => {
+					this.setAllStatsDataState(res);
+				})
+		}
 	}
 
 	render(){
