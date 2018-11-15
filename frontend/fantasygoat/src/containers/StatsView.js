@@ -153,6 +153,9 @@ class Stats extends React.Component {
 
 	handleWeekChange = (week) => {
 		console.log(`This is week ${week}`);
+		this.setState({
+			selectedWeek: week
+		})
 	}
 
 	render(){
