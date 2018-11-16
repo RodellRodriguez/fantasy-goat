@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
+import { Button } from 'antd';
+
 import StatsTable from '../components/Table';
 import WeekSelector from '../components/WeekSelector';
 
@@ -8,7 +10,7 @@ class Stats extends React.Component {
 
 	constructor(props){
 		super(props);
-		this.backendDomain = 'http://127.0.0.1:8000';
+		this.backendDomain = 'http://127.0.0.1:8000/';
 		this.state = {
 			stats: [],
 			selectedWeek: 0,
@@ -20,21 +22,37 @@ class Stats extends React.Component {
 	}
 
 	componentDidMount(){
-		axios.get(this.backendDomain + '/weeklystats/current')
+		axios.get(this.backendDomain + 'weeklystats/current/')
 			.then(res => {
-				this.setAllStatsDataState(res);
+				this.setAllStatsDataState(res, true);
 			})
 	}
 
-	setAllStatsDataState = statsPayload => {
-		const currentWeek = statsPayload.data["fantasy_content"]["league"][0]['current_week'];
-		let stats = [...Array(currentWeek)];
-		stats[currentWeek-1] = this.cleanStatsForTable(statsPayload.data);
+	setAllStatsDataState = (statsPayload, currentWeek = false) => {
+		let selectedWeek = statsPayload.data["fantasy_content"]["league"][1]["teams"][0]["team"][1]['team_stats']["week"];
+		if (typeof selectedWeek === 'string') {
+			selectedWeek = parseInt(selectedWeek);
+		}
+		console.log('selectedWeek is',selectedWeek)
+		console.log('selectedWeek type is', typeof selectedWeek);
+
+		let stats = [...Array(selectedWeek)];
+		console.log('stats before cleaning', stats)
+		stats[selectedWeek-1] = this.cleanStatsForTable(statsPayload.data);
+		console.log('stats after cleaning', stats);
+	
 		this.setState({
 			stats: stats,
-			selectedWeek: currentWeek,
-			currentWeek: currentWeek,
-			selectedWeekIndex: currentWeek-1
+			selectedWeek: selectedWeek,
+			selectedWeekIndex: selectedWeek-1,
+			selectedRowKeys: [],
+			selectedRows: []
+		}, function () {
+			if (currentWeek) {
+				this.setState({
+					currentWeek: selectedWeek
+				})
+			}
 		});			
 	}
 
@@ -156,18 +174,34 @@ class Stats extends React.Component {
 	}
 
 	handleWeekChange = (week) => {
-		if (typeof this.state.stats[week-1] === 'undefined') {
-			axios.get(this.backendDomain + `/weeklystats/${week}`)
-				.then(res => {
-					this.setAllStatsDataState(res);
-				})
-		}
+		console.log('before if statement', this.state.stats)
+		this.setState({
+			stats: [],
+			selectedWeek: 0
+		}, () => {
+			if (typeof this.state.stats[week-1] === 'undefined') {
+				axios.get(this.backendDomain + `weeklystats/week/${week}`)
+					.then(res => {
+						this.setAllStatsDataState(res);
+					})
+			}
+			else {
+				this.setState({
+					selectedWeek: week,
+					selectedWeekIndex: parseInt(week)-1
+				});
+			}
+		});
 	}
 
 	render(){
 		// Don't render any of the children components until we receive the stats props via Axios
 	    if (this.state.selectedWeek === 0){
-	      return null;
+	      return (
+	      		<Button type="primary" loading>
+		        	Loading Stats
+		        </Button>
+	      	)
 	    }
 		const rowSelection = {
 	    	selectedRowKeys: this.state.selectedRowKeys,
