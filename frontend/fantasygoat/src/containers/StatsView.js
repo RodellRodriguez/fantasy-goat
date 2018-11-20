@@ -10,7 +10,7 @@ class Stats extends React.Component {
 
 	constructor(props){
 		super(props);
-		this.backendDomain = 'http://127.0.0.1:8000/';
+		this.backendDomain = 'http://fantasy-goat-dev.dqgjnfg3vj.us-east-2.elasticbeanstalk.com/';
 		this.state = {
 			stats: [],
 			selectedWeek: 0,
