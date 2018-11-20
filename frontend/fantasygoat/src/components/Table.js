@@ -56,10 +56,6 @@ class StatsTable extends React.Component {
     };
   }
 
-  test = (record, index) => {
-    //console.log('record:', record, 'index', index);
-  }
-
   render() {
     
     return (
@@ -70,7 +66,6 @@ class StatsTable extends React.Component {
             rowSelection={this.props.rowSelection} 
             columns={statsColumns} 
             dataSource={this.props.stats}
-            rowClassName = {this.test}
         />
       </div>
     );

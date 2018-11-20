@@ -33,13 +33,9 @@ class Stats extends React.Component {
 		if (typeof selectedWeek === 'string') {
 			selectedWeek = parseInt(selectedWeek);
 		}
-		console.log('selectedWeek is',selectedWeek)
-		console.log('selectedWeek type is', typeof selectedWeek);
 
 		let stats = [...Array(selectedWeek)];
-		console.log('stats before cleaning', stats)
 		stats[selectedWeek-1] = this.cleanStatsForTable(statsPayload.data);
-		console.log('stats after cleaning', stats);
 	
 		this.setState({
 			stats: stats,
@@ -108,7 +104,6 @@ class Stats extends React.Component {
 		} 
 
 		this.setState({ selectedRowKeys, selectedRows });
-		console.log('selectedRows are:', selectedRows);
 		this.calculateScore(selectedRows);
 	}
 
@@ -180,7 +175,6 @@ class Stats extends React.Component {
 	}
 
 	handleWeekChange = (week) => {
-		console.log('before if statement', this.state.stats)
 		this.setState({
 			stats: [],
 			selectedWeek: 0
@@ -208,6 +202,7 @@ class Stats extends React.Component {
 
 	preventSelectAll = () => {
 		this.setState({selectedRowKeys: []});
+		this.clearTeamScores();
 	}
 
 	render(){

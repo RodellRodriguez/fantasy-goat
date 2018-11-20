@@ -25,7 +25,8 @@ SECRET_KEY = '(e0$ot@qeoah#brq(1k%-&9ndftn!ouu51*@8-@k*1gdkcgkt+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1',
+'fantasy-goat-dev.dqgjnfg3vj.us-east-2.elasticbeanstalk.com']
 
 
 # Application definition

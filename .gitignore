@@ -1,3 +1,4 @@
 /backend/src/secrets.json
+/backend/src/db.sqlite3
 /backend/env/
 /frontend/fantasygoat/node_modules
