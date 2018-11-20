@@ -98,9 +98,15 @@ class Stats extends React.Component {
 	  }	 
 
 	handleSelectChange = (selectedRowKeys, selectedRows) => {
-		if (this.state.selectedRows.length === 2 && selectedRows.length !== 2) {
-			this.clearTeamScores();
-		}
+		if (this.state.selectedRows.length === 2) {
+			if (selectedRows.length < 2) {
+				this.clearTeamScores();
+			}
+			if (selectedRows.length > 2) {
+				return;
+			}
+		} 
+
 		this.setState({ selectedRowKeys, selectedRows });
 		console.log('selectedRows are:', selectedRows);
 		this.calculateScore(selectedRows);
@@ -178,25 +184,34 @@ class Stats extends React.Component {
 		this.setState({
 			stats: [],
 			selectedWeek: 0
-		}, () => {
-			if (typeof this.state.stats[week-1] === 'undefined') {
-				axios.get(this.backendDomain + `weeklystats/week/${week}`)
-					.then(res => {
-						this.setAllStatsDataState(res);
-					})
-			}
-			else {
-				this.setState({
-					selectedWeek: week,
-					selectedWeekIndex: parseInt(week)-1
-				});
-			}
-		});
+		}, this.changeStatsStateToWeek(week));
+	}
+
+	changeStatsStateToWeek = (week) => {
+		if (typeof this.state.stats[week-1] === 'undefined') {
+			axios.get(this.backendDomain + `weeklystats/week/${week}`)
+				.then(res => {
+					this.setAllStatsDataState(res);
+			})
+		}
+		else {
+			this.setState({
+				selectedWeek: week,
+				selectedWeekIndex: parseInt(week)-1
+			});
+		}
+	}
+
+	statsAreLoaded = () => {
+		return this.state.selectedWeek > 0;
+	}
+
+	preventSelectAll = () => {
+		this.setState({selectedRowKeys: []});
 	}
 
 	render(){
-		// Don't render any of the children components until we receive the stats props via Axios
-	    if (this.state.selectedWeek === 0){
+	    if (!this.statsAreLoaded()){
 	      return (
 	      		<Button type="primary" loading>
 		        	Loading Stats
@@ -206,6 +221,7 @@ class Stats extends React.Component {
 		const rowSelection = {
 	    	selectedRowKeys: this.state.selectedRowKeys,
 	    	onChange: this.handleSelectChange,
+	    	onSelectAll: this.preventSelectAll
 	    };
 	   
 		return (

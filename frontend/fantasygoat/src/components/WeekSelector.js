@@ -21,6 +21,7 @@ const WeekSelector = props => {
 
 	return (
 		<div>Selected Week is {props.selectedWeek}
+		<br></br>
 			<Dropdown overlay={menu}>
 			    <a className="ant-dropdown-link" href="#">
 			      Select a Week <Icon type="down" />

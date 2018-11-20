@@ -56,9 +56,9 @@ class StatsTable extends React.Component {
     };
   }
 
-  greaterThan = n => m => m > n
-
-  lessThan = n => m => m < n
+  test = (record, index) => {
+    //console.log('record:', record, 'index', index);
+  }
 
   render() {
     
@@ -66,7 +66,12 @@ class StatsTable extends React.Component {
       <div>
         <div style={{ marginBottom: 16 }}>
         </div>
-        <Table rowSelection={this.props.rowSelection} columns={statsColumns} dataSource={this.props.stats} />
+        <Table 
+            rowSelection={this.props.rowSelection} 
+            columns={statsColumns} 
+            dataSource={this.props.stats}
+            rowClassName = {this.test}
+        />
       </div>
     );
   }
