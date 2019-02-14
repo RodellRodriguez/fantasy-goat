@@ -13,3 +13,7 @@ Web app uses React on the frontend and Django on the backend. Web app is hosted 
 
 ## Demo
 
+![Scores](https://github.com/RodellRodriguez/fantasy-goat/blob/master/examples/scores.gif)
+
+![Change Week](https://github.com/RodellRodriguez/fantasy-goat/blob/master/examples/change_weeks.gif)
+
