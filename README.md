@@ -8,12 +8,22 @@ While Yahoo Fantasy does provide a functionality to see how a player is doing ag
 
 What this application does is allow a player in my Yahoo Fantasy Basketball league to see how their team would have scored against any other player for any week. 
 
-Web app uses React on the frontend and Django on the backend. Web app is hosted on EC2 via Elastic Beanstalk.
+Web app uses React on the frontend and Django on the backend.
+
+
+## Structure
+
+The web app is mainly driven by making requests to the Yahoo Fantasy Sports API. The front end makes a request for stats from the Django server by supplying the desired week number. By default the stats retrieved upon entering the website will be stats for the current week. Once the Django server receives the desired week, it will make a request to the Yahoo Fantasy Sports server via their API and return the stats back to the front end.
 
 
 ## Demo
 
+First demo below demonstrates the score two teams would receive if they were to face each other on the currently selected week. Note that for the TO category it is the team who has the lower amount that is awarded a point for that category. As you can see the score will change based on which teams are selected
+
 ![Scores](https://github.com/RodellRodriguez/fantasy-goat/blob/master/examples/scores.gif)
+
+
+The second demo below demonstrates changing the selected week. By default the selected week is the current week in the Yahoo Fantasy Basketball league. At the time of writing this, it is currently the 18'th week in the league. Each time a week is selected, the front end calls the Django Rest API who then calls the appropriate stats for the requested week via the Yahoo Fantasy Sports API.
 
 ![Change Week](https://github.com/RodellRodriguez/fantasy-goat/blob/master/examples/change_weeks.gif)
 
