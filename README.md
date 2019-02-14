@@ -10,9 +10,6 @@ What this application does is allow a player in my Yahoo Fantasy Basketball leag
 
 Web app uses React on the frontend and Django on the backend. Web app is hosted on EC2 via Elastic Beanstalk.
 
-See deployed app here!
-
-http://fantasy-goat-frontend-dev.us-east-2.elasticbeanstalk.com/
 
 ## Demo
 
